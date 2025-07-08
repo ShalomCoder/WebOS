@@ -1,0 +1,45 @@
+registerAppMetadata({
+  name: "Settings",
+  icon: "bi-gear",
+  description: "Customize your WebOS experience.",
+  run: function () {
+    openSettings();
+  }
+});
+
+function openSettings(){
+    const window = new AppWindow("", 600, 400, '#fff', '#000', '#fff', '#000');
+
+    const windowContent = `
+    <p class="text-black font-bold text-4xl">Settings</p>
+          <div id="wallpaper" class="w-full mt-5 mb-5">
+            <p class="text-black text-lg font-semibold flex items-center">Background Color: <input type="color" id="set-bg-color" class="w-[200px] h-[30px] rounded-none ml-3 mt-1"></p>
+          </div>
+
+          <div id="wallpaper" class="w-full mt-5 mb-5">
+            <p class="text-black text-lg font-semibold flex items-center">Time & Date Color: <input type="color" id="set-time-color" class="w-[200px] h-[30px] rounded-none ml-3 mt-1"></p>
+          </div>
+
+          <button class="bg-black text-white rounded-[10px] w-fit px-4 py-2" onclick="saveSettings()">Save</button>
+    `;
+
+    window.setContent(windowContent);
+
+    let selector = document.getElementById('set-bg-color');
+    let bgColor = localStorage.getItem('bgColor');
+    selector.value = bgColor;
+
+    let timeSelector = document.getElementById('set-time-color');
+    let timeColor = localStorage.getItem('timeColor');
+    timeSelector.value = timeColor;
+}
+
+function saveSettings(){
+    let bgColor = document.getElementById('set-bg-color').value;
+    document.body.style.backgroundColor = bgColor;
+    localStorage.setItem('bgColor', bgColor);
+
+    let timeColor = document.getElementById('set-time-color').value;
+    document.getElementById('time').style.color = timeColor;
+    localStorage.setItem('timeColor', timeColor);
+}

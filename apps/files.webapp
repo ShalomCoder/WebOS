@@ -1,0 +1,30 @@
+registerAppMetadata({
+  name: "Files",
+  icon: "bi-folder",
+  description: "A file manager for browsing and managing files on your machine.",
+  run: function () {
+    newFilesWindow();
+  }
+});
+
+function newFilesWindow(){
+    const win = new AppWindow("Files", 800, 600, "#f0f0f0", "#000", "#ddd", "#000");
+    const container = win.content;
+    const id = win.windowID;
+    
+    const html = `
+        <div class="flex flex-col h-full w-full text-black font-sans">
+        <div class="flex space-x-6 px-2 py-1 text-sm border-b bg-[#f0f0f0] text-black select-none">
+            <span class="hover:bg-gray-300 px-1 rounded cursor-default">File</span>
+            <span class="hover:bg-gray-300 px-1 rounded cursor-default">Edit</span>
+            <span class="hover:bg-gray-300 px-1 rounded cursor-default">View</span>
+            <span class="hover:bg-gray-300 px-1 rounded cursor-default">Help</span>
+        </div>
+        <div id="file-list${id}" class="flex-grow overflow-y-auto p-2">
+            <p class="text-gray-500">Loading files...</p>
+        </div>
+        <div class="text-xs px-2 py-1 bg-[#f0f0f0] text-right border-t text-black">
+            <span id="file-count${id}">0 files</span>
+        </div>
+        </div>`
+}

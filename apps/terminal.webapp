@@ -1,0 +1,140 @@
+registerAppMetadata({
+  name: "Terminal",
+  icon: "bi-terminal",
+  description: "A command line interface for executing shell commands.",
+  run: function () {
+    newTerminalWindow();
+  }
+});
+
+let currentTerminalID = 1;
+let cwd = "C:\\xampp\\htdocs";
+
+function newTerminalWindow(){
+    let terminalID = currentTerminalID++;
+    const newWindow = new AppWindow(`Terminal ${terminalID}`, 600, 400);
+    let container = newWindow.content;
+    let windowID = newWindow.windowID;
+
+    fetch("http://localhost/shell/shell.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd: "pwd", terminalNum: terminalID })
+    })
+    .then(res => res.json())
+    .then(data => {
+        addInputLine(container, terminalID, data.output, windowID);
+    })
+    .catch(err => {
+        addInputLine(container, terminalID, "directoryError"), windowID;
+    });
+}
+
+// Function to maximize window. Decided to ditch it cuz it doesn't work
+// function maximizeWindow(button) {
+//   const win = button.closest(".terminal-window");
+//   if (!win) return;
+//   win.style.width = "100%";
+//   win.style.height = "calc(100vh-55px)";
+//   win.style.left = "0";
+//   win.style.top = "55px";
+// }
+
+function addInputLine(container, terminalID, cwd, id) {
+  const lineWrapper = document.createElement("div");
+  lineWrapper.classList.add("flex", "items-center", "space-x-2", "mb-1");
+
+  const prompt = document.createElement("span");
+  prompt.textContent = `${cwd}>`;
+  prompt.classList.add("text-green-400", "whitespace-nowrap", "font-sans");
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.classList.add("bg-transparent", "text-white", "outline-none", "flex-grow", "font-mono");
+  input.autofocus = true;
+
+  lineWrapper.appendChild(prompt);
+  lineWrapper.appendChild(input);
+  container.appendChild(lineWrapper);
+
+  input.focus();
+
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      let command = input.value.trim();
+      input.setAttribute("disabled", "true");
+
+      if (command === "") {
+        addInputLine(container, terminalID, cwd, id);
+        container.scrollTop = container.scrollHeight;
+        return;
+      }
+
+      if (command.toLowerCase() === "clear") {
+        container.innerHTML = "";
+        addInputLine(container, terminalID, cwd, id);
+        return;
+      }
+
+      if (command.toLowerCase() === "tree") {
+        const outputDiv = document.createElement("pre");
+        outputDiv.textContent = "Please let's not run that one. Please!";
+        outputDiv.classList.add("text-white", "whitespace-pre-wrap", "text-xl");
+        container.appendChild(outputDiv);
+        addInputLine(container, terminalID, cwd, id);
+        return;
+      }
+
+      if (command.toLowerCase() === "diskpart") {
+        command = "start diskpart";
+      }
+
+      if (command === "exit") {
+        closeWindow(id);
+        return;
+      }
+
+      // if (eval(command)){
+      //   return;
+      // }
+
+      // Send current working directory along with command
+      const loading = document.createElement("div");
+      loading.textContent = "[executing...]";
+      loading.classList.add("text-neutral-400", "font-sans");
+      container.appendChild(loading);
+
+      fetch("http://localhost/shell/shell.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd: command, terminalNum: terminalID }) 
+      })
+        .then(res => res.json())
+        .then(data => {
+          loading.remove();
+          if (data.output){
+              const outputDiv = document.createElement("pre");
+              outputDiv.textContent = data.output || "";
+              outputDiv.classList.add("text-white", "whitespace-pre-wrap");
+              container.appendChild(outputDiv);
+          }
+
+          addInputLine(container, terminalID, data.cwd);
+          container.scrollTop = container.scrollHeight;
+        })
+        .catch(err => {
+          loading.remove();
+          const errorDiv = document.createElement("pre");
+          errorDiv.textContent = "[ERROR] " + err;
+          errorDiv.classList.add("text-red-400");
+          container.appendChild(errorDiv);
+          addInputLine(container, terminalID, data.cwd);
+          container.scrollTop = container.scrollHeight;
+        });
+    }
+    // else if(e.key == "ArrowUp" && input.value == ""){
+    //   newTerminalWindow();
+    //   closeWindow(this);
+    // }
+  });
+}

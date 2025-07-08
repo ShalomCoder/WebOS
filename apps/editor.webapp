@@ -1,0 +1,95 @@
+registerAppMetadata({
+  name: "Editor",
+  icon: "bi-pencil-square",
+  description: "A simple text editor for writing and editing text files.",
+  run: function () {
+    newEditorWindow();
+  }
+});
+
+function newEditorWindow() {
+  const win = new AppWindow("Notepad", 700, 500, "#ffffff", "#000000", "#e0e0e0", "#000000");
+  const container = win.content;
+  const id = win.windowID;
+
+  const html = `
+    <div class="flex flex-col h-full w-full text-black font-sans">
+      <!-- Menu Bar -->
+      <div class="flex px-1 py-1 text-sm bg-[#e7e7e7] rounded-full">
+        <button id="saveBtn-${id}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full">Save</button>
+        <button id="openBtn-${id}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full ml-auto">Open</button>
+      </div>
+
+      <!-- Textarea -->
+      <textarea id="notepad-textarea${id}" class="flex-grow resize-none w-full h-full p-2 font-mono outline-none"></textarea>
+
+      <!-- Status bar -->
+      <div id="notepad-statusbar-${id}" class="text-xs px-2 py-1 bg-[#f0f0f0] text-right border-t text-black rounded-full">
+        0 words, 0 characters
+      </div>
+
+      <!-- Hidden file input -->
+      <input type="file" id="notepad-open${id}" class="hidden" />
+    </div>
+  `;
+
+  win.setContent(html);
+
+  const textarea = container.querySelector(`#notepad-textarea${id}`);
+  const statusBar = container.querySelector(`#notepad-statusbar-${id}`);
+  const fileInput = container.querySelector(`#notepad-open${id}`);
+  const saveBtn = container.querySelector(`#saveBtn-${id}`);
+  const openBtn = container.querySelector(`#openBtn-${id}`);
+
+  function updateStatus() {
+    const text = textarea.value;
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    const chars = text.length;
+    statusBar.textContent = `${words} word${words !== 1 ? 's' : ''}, ${chars} character${chars !== 1 ? 's' : ''}`;
+  }
+
+  textarea.addEventListener("input", updateStatus);
+  updateStatus();
+
+  // Save button click
+  saveBtn.onclick = () => {
+    const blob = new Blob([textarea.value], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "untitled.txt";
+    link.click();
+  };
+
+  // Open button click
+  openBtn.onclick = () => fileInput.click();
+
+  // Ctrl+S
+  win.window.addEventListener("keydown", function (e) {
+    if (e.ctrlKey && e.key.toLowerCase() === "s") {
+      e.preventDefault();
+      saveBtn.click();
+    }
+  });
+
+  // Ctrl+O
+  win.window.addEventListener("keydown", function (e) {
+    if (e.ctrlKey && e.key.toLowerCase() === "o") {
+      e.preventDefault();
+      fileInput.click();
+    }
+  });
+
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      textarea.value = e.target.result;
+      updateStatus();
+    };
+    reader.readAsText(file);
+  });
+
+  textarea.focus();
+}
