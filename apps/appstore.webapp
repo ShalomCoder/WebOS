@@ -15,7 +15,7 @@ function newAppInstallerWindow() {
   const html = `
     <form id="upload-form-${id}" enctype="multipart/form-data" class="flex flex-col gap-4 text-sm font-sans p-2">
       <label>Select a <code>.webapp</code> file to install:</label>
-      <input type="file" name="webappFile" accept=".webapp,.js" required />
+      <input type="file" name="webappFile" accept=".webapp" required />
       <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded w-fit">Install</button>
       <div id="installer-status-${id}" class="text-xs text-green-600 h-5"></div>
     </form>
