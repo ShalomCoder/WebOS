@@ -1,6 +1,12 @@
 function init(){
     let bgColor = localStorage.getItem('bgColor');
-    document.body.style.backgroundColor = bgColor;
+    if(bgColor){
+        document.body.style.backgroundColor = bgColor;
+    }
+    else{
+        localStorage.setItem('bgColor', '#f00');
+        document.body.style.backgroundColor = '#f00';
+    }
 
     const timeElement = document.getElementById('time');
     let timeColor = localStorage.getItem('timeColor');
