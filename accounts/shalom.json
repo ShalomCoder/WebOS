@@ -1,0 +1,12 @@
+{
+  "username": "Shalom",
+  "installedApps": [
+    "calculator.webapp",
+    "editor.webapp",
+    "task-manager.webapp",
+    "files.webapp",
+    "terminal.webapp",
+    "appstore.webapp",
+    "settings.webapp"
+  ]
+}
