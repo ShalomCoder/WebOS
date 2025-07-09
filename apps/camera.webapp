@@ -7,6 +7,8 @@ registerAppMetadata({
   }
 });
 
+const cameraStreams = new Map();
+
 function openCamera() {
   const win = new AppWindow(
     "Camera",
@@ -35,11 +37,7 @@ function openCamera() {
     .then(function (stream) {
       video.srcObject = stream;
       video.onloadedmetadata = () => video.play();
-
-      // Stop the camera stream when window closes
-      win.window.addEventListener("close", () => {
-        stream.getTracks().forEach(track => track.stop());
-      });
+      cameraStreams.set(id, stream);
     })
     .catch(function (err) {
       video.parentElement.innerHTML = `<div class="text-red-500 text-sm">Camera access failed: ${err.message}</div>`;
@@ -55,10 +53,22 @@ function capturePhoto(id) {
   const context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  // Convert to image and download
   const dataURL = canvas.toDataURL("image/png");
   const link = document.createElement("a");
   link.href = dataURL;
   link.download = `photo-${Date.now()}.png`;
   link.click();
+}
+
+function closeWindow(id) {
+  const win = document.querySelector(`#window-${id}`);
+  if (!win) return;
+
+  if (cameraStreams.has(id)) {
+    const stream = cameraStreams.get(id);
+    stream.getTracks().forEach(track => track.stop());
+    cameraStreams.delete(id);
+  }
+
+  win.remove();
 }
