@@ -1,16 +1,22 @@
 function init(){
+    const timeElement = document.getElementById('time');
+    const topBar = document.getElementById('top-bar')
+
     let bgColor = localStorage.getItem('bgColor');
-    if(bgColor){
-        document.body.style.backgroundColor = bgColor;
+    let timeColor = localStorage.getItem('timeColor');
+
+    if(bgColor && timeColor){
+        document.body.style.background = bgColor;
+        topBar.style.color = timeColor;
     }
     else{
         localStorage.setItem('bgColor', '#f00');
-        document.body.style.backgroundColor = '#f00';
+        localStorage.setItem('timeColor', '#fff');
+
+        document.body.style.background = '#f00';
+        topBar.style.color = '#fff';
     }
 
-    const timeElement = document.getElementById('time');
-    let timeColor = localStorage.getItem('timeColor');
-    timeElement.style.color = timeColor;
     
     const updateTime = () => {
         const now = new Date();
