@@ -5,7 +5,6 @@
     "editor.webapp",
     "task-manager.webapp",
     "files.webapp",
-    "terminal.webapp",
     "camera.webapp"
   ]
 }
