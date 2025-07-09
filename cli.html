@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="bootstrap-icons.css" />
+  <link rel="stylesheet" href="aos.css" />
+  <script src="./gsap/minified/gsap.min.js"></script>
+  <script src="./gsap/minified/Draggable.min.js"></script>
+  <script src="./interact.min.js"></script>
+  <script src="./zeroTooltip.min.js"></script>
+  <script>gsap.registerPlugin(Draggable)</script>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>WebShell</title>
+</head>
+<body class="overflow-clip bg-gradient-to-br from-red-600 to-pink-500 h-screen w-vw bg-no-repeat select-none" oncontextmenu="return false;">
+  <div id="taskbar" class="w-vw px-3 py-3 transition-all duration-300 fixed top-0 right-0 left-0 flex items-center flex-row">
+    <p class="font-bold text-white text-lg">WebShell</p>
+    <div class="buttons ml-auto flex space-x-2">
+        <div class="icon bg-neutral-900 hover:bg-gray-800 active:bg-gray-600 transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full" onclick="newTerminalWindow()" title="New Terminal Window">
+          <i class="bi-plus text-white text-2xl"></i>
+        </div>
+
+        <div class="icon bg-neutral-900 hover:bg-neutral-800 active:bg-gray-600 transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full" onclick="toggleSavedCommands()" title="Saved Commands">
+          <i class="bi-download text-white text-md"></i>
+        </div>
+    </div>
+  </div>
+
+  <div id="saved-commands" class="w-[350px] h-fit bg-neutral-900 rounded-[1.2rem] fixed right-[12px] top-[50px] pt-3 px-2 pb-2 hidden">
+    <div id="action-bar" class="flex items-center w-full px-1">
+        <p class="text-white font-semibold text-sm">Saved Commands</p>
+        <button title="New Command" class="text-black bg-white w-fit rounded-full text-xs h-6 ml-auto px-3">New</button>
+    </div>
+        <style>
+            .command:hover > .command-actions{
+                opacity: 100%;
+            }
+        </style>
+    <div class="commands bg-transparent w-full h-fit max-h-[270px] mt-2 rounded-[1rem] p-px overflow-auto space-y-2 *:cursor-default">
+        <div class="command w-full h-fit bg-neutral-800 hover:bg-neutral-700 rounded-[.8rem] p-2 px-3 pr-1 flex items-center transition-all duration-200">
+            <p class="text-sm text-white font-semibold">shutdown /r /fw /t 1</p>
+            <div class="ml-auto space-x-[3px] opacity-0 command-actions transition-opacity duration-300">
+                <button class="bg-transparent hover:bg-neutral-600 transition-colors duration-200 text-neutral-300 px-1 text-md rounded-[.4rem]"><i class="bi-arrow-return-left m-0"></i></button>
+                <button class="bg-transparent hover:bg-neutral-600 transition-colors duration-200 text-neutral-300 px-1 text-lg rounded-[.4rem]"><i class="bi-pencil m-0"></i></button>
+                <button class="bg-transparent hover:bg-neutral-600 transition-colors duration-200 text-neutral-300 px-1 text-lg rounded-[.4rem]"><i class="bi-trash m-0"></i></button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div id="windows" class="w-vw h-screen z-[999]">
+    
+  </div>
+
+  <script>
+ let currentTerminalID = 1;
+ let cwd = "C:\\xampp\\htdocs";
+
+function newTerminalWindow(w=600, h=400) {
+  const windowContainer = document.querySelector("#windows");
+  const termID = currentTerminalID++;
+
+  const terminalHTML = `
+    <div id="terminal-window${termID}" class="terminal-window bg-black/70 rounded-[1.3rem] overflow-auto m-10 absolute p-[7px]" style="top:50px; left:50px;">
+      <div id="title-bar${termID}" class="w-full bg-black/0 hover:bg-black/90 transition-colors duration-300 h-[35px] flex items-center pr-1 pl-3 cursor-move rounded-full">
+        <p class="text-white">Terminal ${termID}</p>
+        <div class="ml-auto flex items-center">
+          <!--<button class="text-white w-7 h-7 rounded-full hover:bg-neutral-800 active:bg-neutral-700 mr-2" onclick="maximizeWindow(this)" title="Close this Window"><i class="bi-square text-[5px]"></i></button>-->
+          <button class="text-white w-7 h-7 rounded-full hover:bg-neutral-800 active:bg-neutral-700" onclick="closeWindow(this)" title="Close this Window"><i class="bi-x"></i></button>
+        </div>
+      </div>
+      <div id="terminal-content${termID}" class="text-white font-mono text-sm p-4 whitespace-pre-wrap h-[calc(100%-35px)] overflow-y-auto"></div>
+    </div>
+  `;
+
+  windowContainer.insertAdjacentHTML("beforeend", terminalHTML);
+
+  const newWindow = document.querySelector(`#terminal-window${termID}`);
+  const titleBar = document.querySelector(`#title-bar${termID}`);
+  const content = document.querySelector(`#terminal-content${termID}`);
+  let container = document.querySelector(`#terminal-content${termID}`);
+
+  newWindow.style.width = w+'px';
+  newWindow.style.height = h+'px';
+
+  Draggable.create(newWindow, { trigger: titleBar });
+
+  interact(newWindow).resizable({
+  edges: { left: true, right: true, bottom: true, top: false },
+  listeners: {
+    move(event) {
+      let { x, y } = event.target.dataset;
+
+      x = parseFloat(x) || 0;
+      y = parseFloat(y) || 0;
+
+      // update the element's style
+      event.target.style.width = `${event.rect.width}px`;
+      event.target.style.height = `${event.rect.height}px`;
+
+      const left = (parseFloat(event.target.style.left) || 0) + event.deltaRect.left;
+      const top = (parseFloat(event.target.style.top) || 0) + event.deltaRect.top;
+
+      event.target.style.left = `${left}px`;
+      event.target.style.top = `${top}px`;
+
+    }
+  },
+  modifiers: [
+    interact.modifiers.restrictSize({
+      min: { width: 300, height: 200 }
+    })
+  ],
+  inertia: true
+});
+
+
+    fetch("http://localhost/shell/shell.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd: "pwd", terminalNum: termID })
+      })
+    .then(res => res.json())
+    .then(data => {
+        addInputLine(container, termID, data.output);
+    })
+    .catch(err => {
+        addInputLine(container, termID, "directoryError");
+    });
+}
+
+function closeWindow(button) {
+  const win = button.closest(".terminal-window");
+  if (!win) return;
+  win.remove();
+}
+
+// Function to maximize window. Decided to ditch it cuz it doesn't work
+// function maximizeWindow(button) {
+//   const win = button.closest(".terminal-window");
+//   if (!win) return;
+//   win.style.width = "100%";
+//   win.style.height = "calc(100vh-55px)";
+//   win.style.left = "0";
+//   win.style.top = "55px";
+// }
+
+function addInputLine(container, termID, cwd) {
+  const lineWrapper = document.createElement("div");
+  lineWrapper.classList.add("flex", "items-center", "space-x-2", "mb-1");
+
+  const prompt = document.createElement("span");
+  prompt.textContent = `${cwd}>`;
+  prompt.classList.add("text-green-400", "whitespace-nowrap", "font-sans");
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.classList.add("bg-transparent", "text-white", "outline-none", "flex-grow", "font-mono");
+  input.autofocus = true;
+
+  lineWrapper.appendChild(prompt);
+  lineWrapper.appendChild(input);
+  container.appendChild(lineWrapper);
+
+  input.focus();
+
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      let command = input.value.trim();
+      input.setAttribute("disabled", "true");
+
+      if (command === "") {
+        addInputLine(container, termID, cwd);
+        container.scrollTop = container.scrollHeight;
+        return;
+      }
+
+      if (command.toLowerCase() === "cls") {
+        container.innerHTML = "";
+        addInputLine(container, termID, cwd);
+        return;
+      }
+
+      if (command.toLowerCase() === "tree") {
+        const outputDiv = document.createElement("pre");
+        outputDiv.textContent = "Please let's not run that one. Please!";
+        outputDiv.classList.add("text-white", "whitespace-pre-wrap", "text-xl");
+        container.appendChild(outputDiv);
+        addInputLine(container, termID, cwd);
+        return;
+      }
+
+      if (command.toLowerCase() === "diskpart") {
+        command = "start diskpart";
+      }
+
+      if (command === "exit") {
+        closeWindow(this);
+        return;
+      }
+
+      // if (eval(command)){
+      //   return;
+      // }
+
+      // Send current working directory along with command
+      const loading = document.createElement("div");
+      loading.textContent = "[executing...]";
+      loading.classList.add("text-neutral-400", "font-sans");
+      container.appendChild(loading);
+
+      fetch("http://localhost/shell/shell.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd: command, terminalNum: termID }) 
+      })
+        .then(res => res.json())
+        .then(data => {
+          loading.remove();
+          if (data.output){
+              const outputDiv = document.createElement("pre");
+              outputDiv.textContent = data.output || "";
+              outputDiv.classList.add("text-white", "whitespace-pre-wrap");
+              container.appendChild(outputDiv);
+          }
+
+          addInputLine(container, termID, data.cwd);
+          container.scrollTop = container.scrollHeight;
+        })
+        .catch(err => {
+          loading.remove();
+          const errorDiv = document.createElement("pre");
+          errorDiv.textContent = "[ERROR] " + err;
+          errorDiv.classList.add("text-red-400");
+          container.appendChild(errorDiv);
+          addInputLine(container, termID, data.cwd);
+          container.scrollTop = container.scrollHeight;
+        });
+    }
+    else if(e.key == "ArrowUp" && input.value == ""){
+      newTerminalWindow();
+      closeWindow(this);
+    }
+  });
+}
+
+function toggleSavedCommands(){
+    container = document.querySelector('#saved-commands');
+    if (container.style.display === "none") {
+        container.style.display = "block";
+        return;
+    }
+    container.style.display = "none";
+}
+
+// function loadSavedCommands(){
+//     container = document.querySelector('.commands');
+
+//     const fs = new File([], './savedCommands.json');
+    
+//     fs.re('./savedCommands.json', 'utf8', (err, data) => {
+//     if (err) throw err;
+//     var jsonData = JSON.parse(data);
+//     console.log(jsonData);
+//     });
+// }
+
+// loadSavedCommands();
+newTerminalWindow();
+  </script>
+</body>
+</html>
