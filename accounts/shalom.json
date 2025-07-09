@@ -6,7 +6,6 @@
     "task-manager.webapp",
     "files.webapp",
     "terminal.webapp",
-    "appstore.webapp",
-    "settings.webapp"
+    "camera.webapp"
   ]
 }
