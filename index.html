@@ -11,8 +11,6 @@
   <script src="./interact.min.js"></script>
   <script>gsap.registerPlugin(Draggable)</script>
   <script src="./WebOSUIKit.js"></script>
-  <script src="./apps/appstore.webapp"></script>
-  <script src="./apps/settings.webapp"></script>
   <script src="./script.js"></script>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <title>WebOS</title>
@@ -37,6 +35,8 @@
 
       <script src="bootloader.js"></script>
       <script>bootWebOS("shalom")</script>
+      <script src="./apps/appstore.webapp"></script>
+      <script src="./apps/settings.webapp"></script>
 
       <div id="dock2"  class="w-fit px-3 h-[70px] bg-white/70 backdrop-blur-sm transition-all duration-300 mx-auto bottom-2 rounded-full flex justify-center items-center flex-row space-x-3 z-[999] shadow-[0px_0px_20px_#1113]">
         <div class="icon bg-white/50 hover:bg-white backdrop-blur-md transition-colors duration-200 w-12 h-12 flex items-center justify-center rounded-full" title="App Store" onclick="newAppStoreWindow()"><i class="bi-shop-window text-2xl"></i></div>
