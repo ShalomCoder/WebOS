@@ -1,46 +1,67 @@
-registerAppMetadata({
-  name: "App Store",
-  icon: "bi-shop-window",
-  description: "Install and manage WebOS apps.",
-  run: function () {
-    newAppInstallerWindow();
-  }
-});
+// registerAppMetadata({
+//   name: "App Store",
+//   icon: "bi-shop-window",
+//   description: "Install and manage WebOS apps.",
+//   run: function () {
+//     newAppInstallerWindow();
+//   }
+// });
 
-function newAppInstallerWindow() {
-  const win = new AppWindow("App Installer", 420, 250, "#fff", "#000", "#ddd", "#000");
+async function getAppList() {
+  const res = await fetch(`/appstore-apps.json`);
+  const list = await res.json();
+
+  window.appStoreList = [
+    "Calculator",
+    "Camera"
+  ];
+
+  for (const app of list.apps) {
+    window.appStoreList.push(app);
+  }
+}
+
+function newAppStoreWindow() {
+  const win = new AppWindow("App Store", "App Store", 500, 400, "#fffc", "#000", "#fff", "#000");
   const container = win.content;
   const id = win.windowID;
 
+  
   const html = `
-    <form id="upload-form-${id}" enctype="multipart/form-data" class="flex flex-col gap-4 text-sm font-sans p-2">
-      <label>Select a <code>.webapp</code> file to install:</label>
-      <input type="file" name="webappFile" accept=".webapp" required />
-      <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded w-fit">Install</button>
-      <div id="installer-status-${id}" class="text-xs text-green-600 h-5"></div>
-    </form>
+  <div id="app-search" class="flex items-center">
+    <p class="text-black font-bold text-3xl">Apps</p>
+    <input type="text" class=" ml-auto py-1 px-2 bg-neutral-50 rounded-lg text-black outline-none" placeholder="Search...">
+  </div>
+    <div class="text-black text-md">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-neutral-600">
+            <th class="py-2 px-4"> </th>
+            <th class="py-2 px-4"></th>
+          </tr>
+        </thead>
+        <tbody id="app-list${id}">
+        </tbody>
+      </table>
+    </div>
   `;
 
+  
   win.setContent(html);
+  
+//   getAppList();
 
-  const form = container.querySelector(`#upload-form-${id}`);
-  const status = container.querySelector(`#installer-status-${id}`);
+  window.appStoreList.forEach(w => {
+      const row = document.createElement("tr");
+      row.classList.add("border-b", "border-neutral-700");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+      row.innerHTML = `
+          <td class="py-2 px-4">${w}</td>
+          <td class="py-2 px-4 text-right">
+              <button class="hover:bg-white px-2 py-1 text-xs rounded" onclick="installApp(${w})"><i class="bi-download"></i> Install</button>
+          </td>
+      `;
 
-    const formData = new FormData(form);
-
-    try {
-      const res = await fetch("/upload-app.php", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await res.text();
-      status.textContent = result.includes("success") ? "✅ App installed!" : "❌ " + result;
-    } catch (err) {
-      status.textContent = "❌ Upload failed: " + err.message;
-    }
+      appList.appendChild(row);
   });
 }

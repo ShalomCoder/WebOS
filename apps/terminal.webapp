@@ -12,7 +12,7 @@ let cwd = "C:\\xampp\\htdocs";
 
 function newTerminalWindow(){
     let terminalID = currentTerminalID++;
-    const newWindow = new AppWindow(`Terminal ${terminalID}`, 600, 400);
+    const newWindow = new AppWindow(`Terminal`, "Terminal", 600, 400);
     let container = newWindow.content;
     let windowID = newWindow.windowID;
 

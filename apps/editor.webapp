@@ -8,23 +8,23 @@ registerAppMetadata({
 });
 
 function newEditorWindow() {
-  const win = new AppWindow("Notepad", 700, 500, "#ffffff", "#000000", "#e0e0e0", "#000000");
+  const win = new AppWindow("Notepad", "Notepad", 700, 500, "#ffffffcc", "#000000", "#e0e0e0", "#000000");
   const container = win.content;
   const id = win.windowID;
 
   const html = `
     <div class="flex flex-col h-full w-full text-black font-sans">
       <!-- Menu Bar -->
-      <div class="flex px-1 py-1 text-sm bg-[#e7e7e7] rounded-full">
+      <div class="flex px-1 py-1 text-sm bg-[#fff] rounded-t-[1.2rem]">
         <button id="saveBtn-${id}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full">Save</button>
         <button id="openBtn-${id}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full ml-auto">Open</button>
       </div>
 
       <!-- Textarea -->
-      <textarea id="notepad-textarea${id}" class="flex-grow resize-none w-full h-full p-2 font-mono outline-none"></textarea>
+      <textarea id="notepad-textarea${id}" class="flex-grow resize-none w-full h-full p-2 font-sans outline-none"></textarea>
 
       <!-- Status bar -->
-      <div id="notepad-statusbar-${id}" class="text-xs px-2 py-1 bg-[#f0f0f0] text-right border-t text-black rounded-full">
+      <div id="notepad-statusbar-${id}" class="text-xs px-2 py-1 bg-[#fff] text-right text-black rounded-b-[1.2rem]">
         0 words, 0 characters
       </div>
 

@@ -8,7 +8,7 @@ registerAppMetadata({
 });
 
 function newCalculatorWindow() {
-    const win = new AppWindow("Calculator", 320, 520, "#111827", "#fff", "#1f2937", "#fff");
+    const win = new AppWindow("Calculator", "Calculator", 320, 520, "#111827", "#fff", "#1f2937", "#fff");
     const container = win.content;
     const id = win.windowID;
 

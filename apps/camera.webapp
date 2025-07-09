@@ -1,0 +1,64 @@
+registerAppMetadata({
+  name: "Camera",
+  icon: "bi-camera",
+  description: "Take photos using your computer's camera.",
+  run: function () {
+    openCamera();
+  }
+});
+
+function openCamera() {
+  const win = new AppWindow(
+    "Camera",
+    "Camera",
+    500,
+    380,
+    "rgba(255,255,255,0.8)",
+    "#000",
+    "#ffffff",
+    "#000000"
+  );
+
+  const id = win.windowID;
+  const windowHTML = `
+    <div class="w-full h-full flex flex-col justify-center items-center space-y-3 p-2">
+      <video id="camera-video-${id}" class="rounded-lg shadow-md max-w-full max-h-[240px]" autoplay playsinline></video>
+      <button onclick="capturePhoto('${id}')" class="px-4 py-1 rounded bg-black text-white hover:bg-neutral-800">📸 Capture</button>
+    </div>
+  `;
+
+  win.setContent(windowHTML);
+
+  const video = win.content.querySelector(`#camera-video-${id}`);
+
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function (stream) {
+      video.srcObject = stream;
+      video.onloadedmetadata = () => video.play();
+
+      // Stop the camera stream when window closes
+      win.window.addEventListener("close", () => {
+        stream.getTracks().forEach(track => track.stop());
+      });
+    })
+    .catch(function (err) {
+      video.parentElement.innerHTML = `<div class="text-red-500 text-sm">Camera access failed: ${err.message}</div>`;
+    });
+}
+
+function capturePhoto(id) {
+  const video = document.querySelector(`#camera-video-${id}`);
+  const canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const context = canvas.getContext("2d");
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Convert to image and download
+  const dataURL = canvas.toDataURL("image/png");
+  const link = document.createElement("a");
+  link.href = dataURL;
+  link.download = `photo-${Date.now()}.png`;
+  link.click();
+}

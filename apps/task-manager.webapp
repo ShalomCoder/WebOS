@@ -8,7 +8,7 @@ registerAppMetadata({
 });
 
 function newTaskManagerWindow() {
-    const win = new AppWindow("Task Manager", 500, 400, '#1e1e1e', '#fff', '#111', '#fff');
+    const win = new AppWindow("Task Manager", "Task Manager", 500, 400, '#1e1e1eee', '#fff', '#111', '#fff');
     const container = win.content;
     const id = win.windowID;
 
@@ -38,7 +38,7 @@ function newTaskManagerWindow() {
             row.classList.add("border-b", "border-neutral-700");
 
             row.innerHTML = `
-                <td class="py-2 px-4">${w.title}</td>
+                <td class="py-2 px-4">${w.name}</td>
                 <td class="py-2 px-4">${w.windowID}</td>
                 <td class="py-2 px-4 text-right">
                     <button class="bg-red-600 hover:bg-red-500 px-2 py-1 text-xs rounded" onclick="closeWindow(${w.windowID})">End Task</button>
@@ -58,5 +58,5 @@ function newTaskManagerWindow() {
         } else {
             renderTaskList();
         }
-    }, 2000);
+    }, 1000);
 }

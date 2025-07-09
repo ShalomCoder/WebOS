@@ -1,14 +1,14 @@
-registerAppMetadata({
-  name: "Settings",
-  icon: "bi-gear",
-  description: "Customize your WebOS experience.",
-  run: function () {
-    openSettings();
-  }
-});
+// registerAppMetadata({
+//   name: "Settings",
+//   icon: "bi-gear",
+//   description: "Customize your WebOS experience.",
+//   run: function () {
+//     openSettings();
+//   }
+// });
 
 function openSettings(){
-    const window = new AppWindow("", 600, 400, '#fff', '#000', '#fff', '#000');
+    const window = new AppWindow("", "Settings", 600, 400, '#fff', '#000', '#fff', '#000');
 
     const windowContent = `
     <p class="text-black font-bold text-4xl">Settings</p>
@@ -40,6 +40,6 @@ function saveSettings(){
     localStorage.setItem('bgColor', bgColor);
 
     let timeColor = document.getElementById('set-time-color').value;
-    document.getElementById('time').style.color = timeColor;
+    document.getElementById('top-bar').style.color = timeColor;
     localStorage.setItem('timeColor', timeColor);
 }
