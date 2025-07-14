@@ -1,0 +1,70 @@
+registerAppMetadata({
+  name: "Calendar",
+  icon: "bi-calendar-date",
+  description: "View and plan your month.",
+  run: function () {
+    openCalendarWindow();
+  }
+});
+
+function openCalendarWindow() {
+  const win = new UIWindow("Calendar", "Calendar", 500, 400, "#fff", "#000", "#fff", "#000");
+  const id = win.windowID;
+
+  win.content.style.overflow = "clip";
+  win.noResize();
+
+  win.viewMonth = dayjs();
+  win.setContent(`<div id="calendar-${id}" class="text-black font-sans p-2"></div>`);
+
+  // Wait for DOM to update before rendering calendar
+  setTimeout(() => renderCalendar(id, win.viewMonth), 0);
+}
+
+function renderCalendar(id, date) {
+  const container = document.getElementById(`calendar-${id}`);
+  if (!container) return;
+
+  const today = dayjs();
+  const monthStart = date.startOf('month');
+  const daysInMonth = date.daysInMonth();
+  const startDay = monthStart.day();
+  const monthName = date.format("MMMM YYYY");
+
+  let html = `
+    <div class="flex justify-between items-center mb-2">
+      <button onclick="calendarPrev(${id})" class="px-3 w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-700 transition-colors duration-200 text-white"><i class="bi-arrow-left"></i></button>
+      <h1 class="text-xl font-bold">${monthName}</h1>
+      <button onclick="calendarNext(${id})" class="px-3 w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-700 transition-colors duration-200 text-white"><i class="bi-arrow-right"></i></button>
+    </div>
+
+    <div class="grid grid-cols-7 gap-2 text-sm font-semibold mb-1">
+      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+    <div class="grid grid-cols-7 gap-2 text-sm font-sans">`;
+
+  for (let i = 0; i < startDay; i++) html += `<div></div>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const thisDate = date.date(d);
+    const isToday = thisDate.isSame(today, 'day') ? "bg-blue-500 text-white font-bold" : "";
+    html += `<div class="p-1 rounded-full flex items-center justify-center h-10 w-10 ${isToday} hover:bg-blue-100 cursor-pointer">${d}</div>`;
+  }
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+function calendarPrev(id) {
+  const win = window.openWindows.find(w => w.windowID === id);
+  if (!win) return;
+  win.viewMonth = win.viewMonth.subtract(1, 'month');
+  renderCalendar(id, win.viewMonth);
+}
+
+function calendarNext(id) {
+  const win = window.openWindows.find(w => w.windowID === id);
+  if (!win) return;
+  win.viewMonth = win.viewMonth.add(1, 'month');
+  renderCalendar(id, win.viewMonth);
+}

@@ -8,7 +8,7 @@ registerAppMetadata({
 });
 
 function newFilesWindow(){
-    const win = new AppWindow("Files", "Files", 800, 600, "#f0f0f0", "#000", "#ddd", "#000");
+    const win = new UIWindow("Files", "Files", 400, 300, "#f0f0f0", "#000", "#ddd", "#000");
     const container = win.content;
     const id = win.windowID;
     

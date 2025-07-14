@@ -1,23 +1,23 @@
 registerAppMetadata({
   name: "Editor",
   icon: "bi-pencil-square",
-  description: "A simple text editor for writing and editing text files.",
+  description: "A simple text editor for writing and editing files.",
   run: function () {
     newEditorWindow();
   }
 });
 
 function newEditorWindow() {
-  const win = new AppWindow("Notepad", "Notepad", 700, 500, "#ffffffcc", "#000000", "#e0e0e0", "#000000");
+  const win = new UIWindow("Editor", "Editor", 700, 500, "#fffc", "#000000", "#fff", "#000");
   const container = win.content;
   const id = win.windowID;
 
   const html = `
     <div class="flex flex-col h-full w-full text-black font-sans">
       <!-- Menu Bar -->
-      <div class="flex px-1 py-1 text-sm bg-[#fff] rounded-t-[1.2rem]">
+      <div class="flex justify-end px-1 py-1 text-sm bg-[#fff] rounded-t-[1.2rem]">
         <button id="saveBtn-${id}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full">Save</button>
-        <button id="openBtn-${id}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full ml-auto">Open</button>
+        <button id="openBtn-${id}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full ml-4">Open</button>
       </div>
 
       <!-- Textarea -->
@@ -56,7 +56,8 @@ function newEditorWindow() {
     const blob = new Blob([textarea.value], { type: "text/plain" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "untitled.txt";
+    link.download = "WebOS Document.txt";
+    // new UIAlert("Editor", "Select a file save location.", "bi-download", 'OK', 'close', "", "", "#000");
     link.click();
   };
 

@@ -1,0 +1,16 @@
+{
+  "username": "Shalom",
+  "installedApps": [
+    "calculator.webapp",
+    "editor.webapp",
+    "task-manager.webapp",
+    "files.webapp",
+    "camera.webapp",
+    "browser.webapp",
+    "notes.webapp",
+    "terminal.webapp"
+  ],
+  "settings":{
+    
+  }
+}

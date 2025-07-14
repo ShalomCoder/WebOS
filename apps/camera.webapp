@@ -10,11 +10,11 @@ registerAppMetadata({
 const cameraStreams = new Map();
 
 function openCamera() {
-  const win = new AppWindow(
+  const win = new UIWindow(
     "Camera",
     "Camera",
     500,
-    380,
+    'fit-content',
     "rgba(255,255,255,0.8)",
     "#000",
     "#ffffff",
@@ -23,9 +23,9 @@ function openCamera() {
 
   const id = win.windowID;
   const windowHTML = `
-    <div class="w-full h-full flex flex-col justify-center items-center space-y-3 p-2">
-      <video id="camera-video-${id}" class="rounded-lg shadow-md max-w-full max-h-[240px]" autoplay playsinline></video>
-      <button onclick="capturePhoto('${id}')" class="px-4 py-1 rounded bg-black text-white hover:bg-neutral-800">📸 Capture</button>
+    <div class="w-full h-full justify-center text-center items-center space-y-3 p-2">
+      <video id="camera-video-${id}" class="rounded-lg shadow-md max-w-full max-h-[240px] mx-auto" style="transform: rotateY(180deg)" autoplay playsinline></video>
+      <button onclick="capturePhoto('${id}')" class="w-20 h-20 rounded-full bg-black text-white hover:bg-neutral-800"><i class="bi-camera text-4xl"></i></button>
     </div>
   `;
 
@@ -60,15 +60,15 @@ function capturePhoto(id) {
   link.click();
 }
 
-function closeWindow(id) {
-  const win = document.querySelector(`#window-${id}`);
-  if (!win) return;
+// function closeWindow(id) {
+//   const win = document.querySelector(`#window-${id}`);
+//   if (!win) return;
 
-  if (cameraStreams.has(id)) {
-    const stream = cameraStreams.get(id);
-    stream.getTracks().forEach(track => track.stop());
-    cameraStreams.delete(id);
-  }
+//   if (cameraStreams.has(id)) {
+//     const stream = cameraStreams.get(id);
+//     stream.getTracks().forEach(track => track.stop());
+//     cameraStreams.delete(id);
+//   }
 
-  win.remove();
-}
+//   win.remove();
+// }

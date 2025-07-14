@@ -12,7 +12,7 @@ let cwd = "C:\\xampp\\htdocs";
 
 function newTerminalWindow(){
     let terminalID = currentTerminalID++;
-    const newWindow = new AppWindow(`Terminal`, "Terminal", 600, 400);
+    const newWindow = new UIWindow(`Terminal`, "Terminal", 600, 400, "#000d", "#fff", "#000", "#fff");
     let container = newWindow.content;
     let windowID = newWindow.windowID;
 
@@ -74,6 +74,7 @@ function addInputLine(container, terminalID, cwd, id) {
         container.innerHTML = "";
         addInputLine(container, terminalID, cwd, id);
         return;
+        return;
       }
 
       if (command.toLowerCase() === "tree") {
@@ -90,7 +91,7 @@ function addInputLine(container, terminalID, cwd, id) {
       }
 
       if (command === "exit") {
-        closeWindow(id);
+        __$kernel_closeWindow$__(id);
         return;
       }
 
@@ -119,7 +120,7 @@ function addInputLine(container, terminalID, cwd, id) {
               container.appendChild(outputDiv);
           }
 
-          addInputLine(container, terminalID, data.cwd);
+          addInputLine(container, terminalID, data.cwd, id);
           container.scrollTop = container.scrollHeight;
         })
         .catch(err => {
@@ -128,7 +129,7 @@ function addInputLine(container, terminalID, cwd, id) {
           errorDiv.textContent = "[ERROR] " + err;
           errorDiv.classList.add("text-red-400");
           container.appendChild(errorDiv);
-          addInputLine(container, terminalID, data.cwd);
+          addInputLine(container, terminalID, data.cwd, id);
           container.scrollTop = container.scrollHeight;
         });
     }

@@ -1,0 +1,10 @@
+{
+  "username": "User",
+  "installedApps": [
+    "calculator.webapp",
+    "editor.webapp",
+    "browser.webapp",
+    "calendar.webapp",
+    "notes.webapp"
+  ]
+}

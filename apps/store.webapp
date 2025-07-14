@@ -1,0 +1,67 @@
+// registerAppMetadata({
+//   name: "App Store",
+//   icon: "bi-shop-window",
+//   description: "Install and manage WebOS apps.",
+//   run: function () {
+//     newAppInstallerWindow();
+//   }
+// });
+
+async function getAppList() {
+  const res = await fetch(`/appstore-apps.json`);
+  const list = await res.json();
+
+  window.appStoreList = [
+    "Calculator",
+    "Camera"
+  ];
+
+  for (const app of list.apps) {
+    window.appStoreList.push(app);
+  }
+}
+
+function newStoreWindow() {
+  const win = new UIWindow("Store", "Store", 500, 400, "#fffc", "#000", "#fff", "#000");
+  const container = win.content;
+  const id = win.windowID;
+
+  
+  const html = `
+  <div id="app-search" class="flex items-center">
+    <p class="text-black font-bold text-3xl">Apps</p>
+    <input type="text" class=" ml-auto py-1 px-2 bg-neutral-50 rounded-lg text-black outline-none" placeholder="Search...">
+  </div>
+    <div class="text-black text-md">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-neutral-600">
+            <th class="py-2 px-4"> </th>
+            <th class="py-2 px-4"></th>
+          </tr>
+        </thead>
+        <tbody id="app-list${id}">
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  
+  win.setContent(html);
+  
+//   getAppList();
+
+  window.appStoreList.forEach(w => {
+      const row = document.createElement("tr");
+      row.classList.add("border-b", "border-neutral-700");
+
+      row.innerHTML = `
+          <td class="py-2 px-4">${w}</td>
+          <td class="py-2 px-4 text-right">
+              <button class="hover:bg-white px-2 py-1 text-xs rounded" onclick="installApp(${w})"><i class="bi-download"></i> Install</button>
+          </td>
+      `;
+
+      appList.appendChild(row);
+  });
+}

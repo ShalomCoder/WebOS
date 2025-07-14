@@ -8,14 +8,14 @@ registerAppMetadata({
 });
 
 function newCalculatorWindow() {
-    const win = new AppWindow("Calculator", "Calculator", 320, 520, "#111827", "#fff", "#1f2937", "#fff");
+    const win = new UIWindow("Calculator", "Calculator", 320, 520, "#fffa", "#000", "#ddd", "#000");
     const container = win.content;
     const id = win.windowID;
 
     const html = `
-        <div class="flex flex-col h-full w-full text-white font-mono">
+        <div class="flex flex-col h-full w-full text-white font-sans">
             <!-- Display -->
-            <div id="calc-display-${id}" class="text-right text-5xl mb-4 p-3 rounded-xl bg-[#1e293b] shadow-inner select-none overflow-hidden">
+            <div id="calc-display-${id}" class="text-right text-5xl mb-4 p-3 rounded-xl bg-white/70 shadow-[0px_0px_10px_#1112] text-black select-none overflow-hidden">
                 0
             </div>
 
@@ -28,15 +28,17 @@ function newCalculatorWindow() {
                     "1", "2", "3", "+",
                     "0", ".", "=", ""
                 ].map(label => {
-                    const isOp = ["÷", "×", "-", "+", "="].includes(label);
+                    const isOp = ["÷", "×", "-", "+"].includes(label);
                     const isZero = label === "0";
                     const colSpan = isZero ? "col-span-2" : "";
-                    const baseClass = `h-full w-full text-xl font-bold ${colSpan} rounded-full flex items-center justify-center transition-all`;
+                    const baseClass = `h-full w-full text-2xl font-bold ${colSpan} rounded-full flex items-center justify-center transition-all shadow-[0px_0px_15px_#1113]`;
                     const bg = isOp
-                        ? "bg-purple-500 hover:bg-purple-400"
+                        ? "bg-orange-400/70 text-white hover:bg-orange-500/90 text-3xl"
                         : label === "C"
-                        ? "bg-red-500 hover:bg-red-400"
-                        : "bg-gray-700 hover:bg-gray-600";
+                        ? "bg-red-500/70 hover:bg-red-500/90"
+                        : label === "="
+                        ? "bg-green-500/70 hover:bg-green-500/90 text-white"
+                        : "bg-white/50 hover:bg-white text-black";
                     return `<button class="${baseClass} ${bg}" data-label="${label}">${label}</button>`;
                 }).join("")}
             </div>

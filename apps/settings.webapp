@@ -7,39 +7,77 @@
 //   }
 // });
 
+const appPage = `
+  <p class="hover:bg-white/30 text-black transition-colors duration-200 py-1 px-3 w-fit text-center rounded-full"><i class="bi-arrow-left"></i> Back</p>
+  <p class="text-black font-bold text-4xl">Apps</p>
+    <div class="mt-4 divide-y-[1px] divide-[#aaa] text-black text-lg">
+      <div class="w-full flex items-center hover:bg-white/90 h-fit p-2 transition-colors duration-200 ">
+        <p>Calculator</p>
+        <i class="bi-chevron-right text-sm ml-auto"></i>
+      </div>
+    </div>
+  `;
+
 function openSettings(){
-    const window = new AppWindow("", "Settings", 600, 400, '#fff', '#000', '#fff', '#000');
+  const win = new UIWindow("<i class='bi-gear text-xl'></i>", "Settings", 600, 400, '#fffc', '#000', '#fff', '#000');
+  const winId = win.id;
 
-    const windowContent = `
+  const homeContent = `
     <p class="text-black font-bold text-4xl">Settings</p>
-          <div id="wallpaper" class="w-full mt-5 mb-5">
-            <p class="text-black text-lg font-semibold flex items-center">Background Color: <input type="color" id="set-bg-color" class="w-[200px] h-[30px] rounded-none ml-3 mt-1"></p>
-          </div>
+    <div class="mt-4 divide-y-[1px] divide-[#aaa] text-black text-lg">
+      <div class="w-full flex items-center hover:bg-white/90 h-fit p-2 transition-colors duration-200" onclick="appsPage(${winId})">
+        <p>Apps</p>
+        <i class="bi-chevron-right text-sm ml-auto"></i>
+      </div>
+      <div class="w-full flex items-center hover:bg-white/90 h-fit p-2 transition-colors duration-200 ">
+        <p>Theme</p>
+        <i class="bi-chevron-right text-sm ml-auto"></i>
+      </div>
 
-          <div id="wallpaper" class="w-full mt-5 mb-5">
-            <p class="text-black text-lg font-semibold flex items-center">Time & Date Color: <input type="color" id="set-time-color" class="w-[200px] h-[30px] rounded-none ml-3 mt-1"></p>
-          </div>
+      <div class="w-full flex items-center hover:bg-white/90 h-fit p-2 transition-colors duration-200 ">
+        <p>Notifications</p>
+        <i class="bi-chevron-right text-sm ml-auto"></i>
+      </div>
 
-          <button class="bg-black text-white rounded-[10px] w-fit px-4 py-2" onclick="saveSettings()">Save</button>
-    `;
+      <div class="w-full flex items-center hover:bg-white/90 h-fit p-2 transition-colors duration-200 ">
+        <p>Account</p>
+        <div class="ml-auto flex items-center">
+          <p class="text-neutral-500 text-sm mr-2" id="set-accountName"></p>
+          <i class="bi-chevron-right text-sm"></i>
+        </div>
+      </div>
 
-    window.setContent(windowContent);
+      <div class="w-full flex items-center hover:bg-white/90 h-fit p-2 transition-colors duration-200 ">
+        <p>WebOS</p>
+        <i class="bi-chevron-right text-sm ml-auto"></i>
+      </div>
 
-    let selector = document.getElementById('set-bg-color');
-    let bgColor = localStorage.getItem('bgColor');
-    selector.value = bgColor;
+      <div class="w-full flex items-center hover:bg-white/90 h-fit p-2 transition-colors duration-200 ">
+        <p>About</p>
+        <i class="bi-chevron-right text-sm ml-auto"></i>
+      </div>
+    </div>
 
-    let timeSelector = document.getElementById('set-time-color');
-    let timeColor = localStorage.getItem('timeColor');
-    timeSelector.value = timeColor;
+    <script>
+    
+    </script>
+  `;
+
+  win.setContent(homeContent);
+
+  fetch(`../api/account.php`, {
+    method:'POST', 
+    headers: { "Content-Type": "application/json" }, 
+    body: JSON.stringify({ uh: sessionStorage.getItem("uh")})
+  })
+  .then(response => 
+    response.json()
+  )
+  .then(content => 
+    document.querySelector("#set-accountName").innerHTML = content.username
+  );
 }
 
-function saveSettings(){
-    let bgColor = document.getElementById('set-bg-color').value;
-    document.body.style.backgroundColor = bgColor;
-    localStorage.setItem('bgColor', bgColor);
-
-    let timeColor = document.getElementById('set-time-color').value;
-    document.getElementById('top-bar').style.color = timeColor;
-    localStorage.setItem('timeColor', timeColor);
+function appsPage(id){
+  document.getElementById(`window-content${id}`).innerHTML = appPage;
 }
